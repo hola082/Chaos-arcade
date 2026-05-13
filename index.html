@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAOS ARCADE - El Juego Definitivo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div class="game-background"></div>
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="hud">
+            <div class="hud-item">
+                <span class="hud-label">TIEMPO:</span>
+                <span class="hud-value" id="hudTime">0s</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">PUNTOS:</span>
+                <span class="hud-value" id="hudScore">0</span>
+            </div>
+            <!-- Registros de reglas eliminados -->
+            <div class="hud-item">
+                <span class="hud-label">BUFFS:</span>
+                <span class="hud-value" id="hudBuffs">—</span>
+            </div>
+        </div>
+
+        <div id="leaderboard">
+            <div class="leaderboard-title">TOP SCORES</div>
+            <div class="leaderboard-entry" id="leaderboardList">
+                Cargando...
+            </div>
+        </div>
+
+    <!-- ruleNotification removed -->
+
+        <div id="loginScreen">
+            <div class="login-container">
+                <div class="login-left">
+                    <div class="screen-content">
+                        <div class="screen-title">⚡ CHAOS ARCADE ⚡</div>
+                        <div class="login-form">
+                            <div id="userInfo" style="display: none;">
+                                <p class="welcome-text">Bienvenido 👾</p>
+                                <p class="user-name"><span id="userName"></span></p>
+                                <button class="start-button" onclick="showDifficultyScreen()">ELEGIR DIFICULTAD</button>
+                                <button class="logout-button" onclick="logoutUser()">CERRAR SESIÓN</button>
+                            </div>
+                            <div id="notLoggedInInfo" style="display: block;">
+                                <p class="info-text">Inicia sesión con Google para guardar tu puntuación</p>
+                                <div id="googleLoginDiv" style="text-align: center; margin: 30px 0;"></div>
+
+                                <!-- Botón añadido: será usado por script.js (id: googleSignInBtn) -->
+                                <div style="text-align: center; margin-bottom: 14px;">
+                                    <button id="googleSignInBtn" class="start-button">INICIAR SESIN CON GOOGLE</button>
+                                </div>
+
+                                <div id="authError" style="display:none; color:#ff006e; text-align:center; margin:8px 0; font-size:0.95rem;"></div>
+
+                                <p class="skip-text">O continúa sin autenticarte:</p>
+                                <button class="start-button" onclick="showDifficultyScreen()">JUGAR SIN LOGIN</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-right">
+                    <div class="global-leaderboard">
+                        <div class="global-title">🏆 TOP JUGADORES 🏆</div>
+                        <div class="global-leaderboard-list" id="globalLeaderboardList">
+                            <p style="text-align: center; color: #ff006e;">Cargando...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="difficultyScreen" style="display: none;">
+            <div class="screen-content">
+                <div class="screen-title">SELECCIONA DIFICULTAD</div>
+                <div class="difficulty-grid">
+                    <button class="difficulty-button easy" onclick="setDifficulty('easy')">
+                        <div class="difficulty-name">FÁCIL</div>
+                        <div class="difficulty-desc">Enemigos: 3 | Spawn: 2s</div>
+                    </button>
+                    <button class="difficulty-button normal" onclick="setDifficulty('normal')">
+                        <div class="difficulty-name">NORMAL</div>
+                        <div class="difficulty-desc">Enemigos: 5 | Spawn: 1.5s</div>
+                    </button>
+                    <button class="difficulty-button hard" onclick="setDifficulty('hard')">
+                        <div class="difficulty-name">DIFÍCIL</div>
+                        <div class="difficulty-desc">Enemigos: 8 | Spawn: 1s</div>
+                    </button>
+                    <button class="difficulty-button extreme" onclick="setDifficulty('extreme')">
+                        <div class="difficulty-name">EXTREMO</div>
+                        <div class="difficulty-desc">Enemigos: 12 | Spawn: 0.7s</div>
+                    </button>
+                </div>
+                <button class="cancel-button" onclick="showLoginScreen()">← VOLVER</button>
+            </div>
+        </div>
+
+        <div id="startScreen">
+            <div class="screen-content">
+                <div class="screen-title">⚡ CHAOS ARCADE ⚡</div>
+                <div class="screen-instructions">
+                    <p><strong>WASD</strong> - Mover | <strong>ESPACIO</strong> - Atacar</p>
+                    <p>Esquiva enemigos, recoge items ⭐</p>
+                </div>
+                <button class="start-button" onclick="startGame()">COMENZAR</button>
+            </div>
+        </div>
+
+        <div id="gameOverScreen">
+            <div class="game-over-content">
+                <div class="game-over-title">⚡ GAME OVER ⚡</div>
+                <div class="game-over-stats">
+                    <div class="game-over-stat">TIEMPO: <span id="finalTime">0s</span></div>
+                    <div class="game-over-stat">PUNTOS: <span id="finalScore">0</span></div>
+                </div>
+                <div style="display:flex; gap:12px; justify-content:center; margin-top:28px;">
+                    <button id="backToLoginBtn" class="restart-button" onclick="showStartScreen()">VOLVER AL INICIO</button>
+                    <button class="restart-button" onclick="startGame()">JUGAR DE NUEVO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (compat version - compatible with regular scripts) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>

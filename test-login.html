@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login Button</title>
+    <style>
+        body {
+            background: #0a0e27;
+            color: #00ff9f;
+            font-family: Arial;
+            padding: 20px;
+        }
+        .test-section {
+            background: #1a1f3a;
+            border: 1px solid #00ff9f;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .visible {
+            color: #50fa7b;
+        }
+        .hidden {
+            color: #ff5555;
+        }
+        button {
+            background: #00ff9f;
+            color: #0a0e27;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00ffcc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Login Button</h1>
+    
+    <div class="test-section">
+        <h2>Estado Actual del DOM</h2>
+        <p>
+            <span id="userInfoStatus"></span><br>
+            <span id="notLoggedInStatus"></span><br>
+            <span id="googleDivStatus"></span>
+        </p>
+    </div>
+
+    <div class="test-section">
+        <h2>Elementos del HTML</h2>
+        <div id="userInfo" style="display: none; border: 2px solid red; padding: 10px;">
+            [userInfo - Debería estar OCULTO]
+        </div>
+        <div id="notLoggedInInfo" style="display: block; border: 2px solid green; padding: 10px;">
+            [notLoggedInInfo - Debería estar VISIBLE]
+            <button class="start-button">JUGAR SIN LOGIN</button>
+        </div>
+        <div id="googleLoginDiv" style="border: 2px solid blue; padding: 10px; margin: 10px 0;">
+            [googleLoginDiv - Aquí va el botón de Google]
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Controles de Debug</h2>
+        <button onclick="checkStatus()">🔍 Chequear Estado</button>
+        <button onclick="showNotLoggedIn()">📱 Mostrar "No Logueado"</button>
+        <button onclick="showUserInfo()">✅ Mostrar "Logueado"</button>
+        <button onclick="toggleConsole()">📟 Abrir Consola (F12)</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Logs de Console</h2>
+        <div id="consoleLogs" style="background: #000; color: #0f0; padding: 10px; height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+            [Los logs aparecerán aquí]
+        </div>
+    </div>
+
+    <script>
+        // Capturar logs
+        const consoleLogs = document.getElementById('consoleLogs');
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        function addLog(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.textContent = `[${timestamp}] ${type}: ${message}`;
+            line.style.color = type === 'ERROR' ? '#ff5555' : type === 'WARN' ? '#ffb86c' : '#0f0';
+            consoleLogs.appendChild(line);
+            consoleLogs.scrollTop = consoleLogs.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog(...args);
+            addLog('LOG', args.join(' '));
+        };
+
+        console.warn = function(...args) {
+            originalWarn(...args);
+            addLog('WARN', args.join(' '));
+        };
+
+        console.error = function(...args) {
+            originalError(...args);
+            addLog('ERROR', args.join(' '));
+        };
+
+        function checkStatus() {
+            console.clear();
+            console.log('=== CHEQUEO DE ESTADO ===');
+            
+            const userInfo = document.getElementById('userInfo');
+            const notLoggedIn = document.getElementById('notLoggedInInfo');
+            const googleDiv = document.getElementById('googleLoginDiv');
+            
+            console.log('✓ userInfo encontrado:', !!userInfo);
+            console.log('✓ notLoggedInInfo encontrado:', !!notLoggedIn);
+            console.log('✓ googleLoginDiv encontrado:', !!googleDiv);
+            
+            console.log('---');
+            console.log('userInfo.display:', userInfo?.style?.display);
+            console.log('notLoggedInInfo.display:', notLoggedIn?.style?.display);
+            
+            console.log('---');
+            const userInfoVisible = userInfo?.style?.display !== 'none';
+            const notLoggedInVisible = notLoggedIn?.style?.display !== 'none';
+            console.log('¿userInfo VISIBLE?', userInfoVisible ? '❌ NO DEBERÍA' : '✅ OCULTO');
+            console.log('¿notLoggedInInfo VISIBLE?', notLoggedInVisible ? '✅ SÍ' : '❌ NO VISIBLE');
+        }
+
+        function showNotLoggedIn() {
+            console.log('Mostrando: No Logueado');
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('notLoggedInInfo').style.display = 'block';
+            checkStatus();
+        }
+
+        function showUserInfo() {
+            console.log('Mostrando: Logueado');
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('notLoggedInInfo').style.display = 'none';
+            checkStatus();
+        }
+
+        function toggleConsole() {
+            alert('Abre DevTools con F12 o Click Derecho → Inspeccionar → Pestaña "Console"');
+        }
+
+        // Auto-check al cargar
+        window.addEventListener('load', () => {
+            console.log('Página cargada');
+            console.log('Checkeando estado...');
+            checkStatus();
+        });
+    </script>
+</body>
+</html>
